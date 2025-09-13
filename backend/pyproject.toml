@@ -6,9 +6,9 @@ build-backend = "hatchling.build"
 packages = ["src"]
 
 [project]
-name = "sublease-platform"
+name = "raiders-sublease"
 version = "0.1.0"
-description = "Sub-leasing apartment platform with social features"
+description = "Sub-leasing apartment platform with social features for red raiders"
 license = {text = "GPL-3.0"}
 requires-python = ">=3.12"
 

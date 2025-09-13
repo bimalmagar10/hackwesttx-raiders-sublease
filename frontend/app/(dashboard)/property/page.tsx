@@ -9,7 +9,6 @@ import { Header } from "@/components/header";
 import {
   Upload,
   MapPin,
-  DollarSign,
   Home,
   Wifi,
   Car,
@@ -106,16 +105,13 @@ export default function PostProperty() {
                     </select>
                   </div>
                   <div>
-                    <Label htmlFor="max-occupancy">Max Occupancy</Label>
-                    <select
-                      id="max-occupancy"
-                      className="mt-1 w-full border border-border rounded-md px-3 py-2 focus:border-primary focus:ring-primary bg-background"
-                    >
-                      <option>1 person</option>
-                      <option>2 people</option>
-                      <option>3 people</option>
-                      <option>4+ people</option>
-                    </select>
+                    <Label htmlFor="square-feet">Square Feet</Label>
+                    <Input
+                      id="square-feet"
+                      type="number"
+                      placeholder="e.g., 500"
+                      className="mt-1"
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -131,87 +127,46 @@ export default function PostProperty() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="address">Full Address</Label>
+                  <Label htmlFor="address-line1">Address Line 1</Label>
                   <Input
-                    id="address"
-                    placeholder="123 University Ave, College Town, ST 12345"
+                    id="address-line1"
+                    placeholder="123 University Ave"
                     className="mt-1"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="university">Nearest University</Label>
-                    <Input
-                      id="university"
-                      placeholder="e.g., State University"
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="distance">Distance to Campus</Label>
-                    <Input
-                      id="distance"
-                      placeholder="e.g., 0.5 miles"
-                      className="mt-1"
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Pricing & Availability */}
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <DollarSign className="h-5 w-5 text-primary" />
-                  <span>Pricing & Availability</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="monthly-rent">Monthly Rent ($)</Label>
-                    <Input
-                      id="monthly-rent"
-                      type="number"
-                      placeholder="850"
-                      className="mt-1"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="security-deposit">
-                      Security Deposit ($)
-                    </Label>
-                    <Input
-                      id="security-deposit"
-                      type="number"
-                      placeholder="500"
-                      className="mt-1"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="available-from">Available From</Label>
-                    <Input id="available-from" type="date" className="mt-1" />
-                  </div>
-                  <div>
-                    <Label htmlFor="available-until">Available Until</Label>
-                    <Input id="available-until" type="date" className="mt-1" />
-                  </div>
-                </div>
                 <div>
-                  <Label htmlFor="min-stay">Minimum Stay Duration</Label>
-                  <select
-                    id="min-stay"
-                    className="mt-1 w-full border border-border rounded-md px-3 py-2 focus:border-primary focus:ring-primary bg-background"
-                  >
-                    <option>1 week</option>
-                    <option>2 weeks</option>
-                    <option>1 month</option>
-                    <option>2 months</option>
-                    <option>3 months</option>
-                  </select>
+                  <Label htmlFor="address-line2">Address Line 2 (Optional)</Label>
+                  <Input
+                    id="address-line2"
+                    placeholder="Apt 4B, Unit 203"
+                    className="mt-1"
+                  />
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="city">City</Label>
+                    <Input
+                      id="city"
+                      placeholder="College Town"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="state">State</Label>
+                    <Input
+                      id="state"
+                      placeholder="TX"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="country">Country</Label>
+                    <Input
+                      id="country"
+                      placeholder="USA"
+                      className="mt-1"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -306,11 +261,8 @@ export default function PostProperty() {
                       Location
                     </p>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold text-primary">$0</span>
-                    <span className="text-sm text-muted-foreground">
-                      per month
-                    </span>
+                  <div className="text-sm text-muted-foreground">
+                    Property preview will appear as you fill out the form
                   </div>
                 </div>
               </CardContent>

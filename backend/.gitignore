@@ -90,5 +90,5 @@ coverage.xml
 Thumbs.db
 
 uploads/
-.env
+# .env
 DOMAIN_ARCHITECTURE.md
