@@ -1,0 +1,94 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.py[oc]
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+wheels/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# Pytest cache
+.cache/
+pytest_cache/
+
+# MyPy & Pylint
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+pylint-report.txt
+
+# VSCode / PyCharm / IDEs
+.vscode/
+.idea/
+*.iml
+
+# Uvicorn log files
+*.log
+
+# Alembic
+alembic/versions/*.pyc
+alembic/versions/__pycache__/
+alembic.ini
+
+# Alembic
+migrations/versions/*.pyc
+migrations/versions/__pycache__/
+alembic.ini
+
+# Local SQLite DB
+*.sqlite3
+*.db
+
+# Test coverage
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Local logs and temp
+*.log
+*.tmp
+
+# Jupyter
+.ipynb_checkpoints
+
+# System files
+.DS_Store
+Thumbs.db
+
+uploads/
+.env
+DOMAIN_ARCHITECTURE.md

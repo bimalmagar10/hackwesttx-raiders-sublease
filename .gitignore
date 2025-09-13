@@ -1,0 +1,16 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+wheels/
+*.py[oc]
+.DS_Store
+requirements.md
+er-diagram.png
+er_diagram.png
+
+guidelines.md
+.vscode/
+.idea/
+.venv/
+backend/tests

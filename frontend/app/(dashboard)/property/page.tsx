@@ -1,0 +1,369 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Header } from "@/components/header";
+import {
+  Upload,
+  MapPin,
+  DollarSign,
+  Home,
+  Wifi,
+  Car,
+  Dumbbell,
+  Waves,
+  WashingMachine,
+  ChefHat,
+  X,
+  ArrowLeft,
+} from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { amenities } from "@/lib/constants";
+
+export default function PostProperty() {
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+
+  const toggleAmenity = (amenityId: string) => {
+    setSelectedAmenities((prev) =>
+      prev.includes(amenityId)
+        ? prev.filter((id) => id !== amenityId)
+        : [...prev, amenityId]
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <div className="flex items-center space-x-4 mb-4">
+            <Link href="/dashboard">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </Link>
+          </div>
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            List Your Property
+          </h1>
+          <p className="text-muted-foreground">
+            Share your space with fellow students and earn extra income
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main Form */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Basic Information */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Home className="h-5 w-5 text-primary" />
+                  <span>Basic Information</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Property Title</Label>
+                  <Input
+                    id="title"
+                    placeholder="e.g., Cozy Studio Near Campus"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Describe your property, what makes it special, nearby amenities..."
+                    className="mt-1 min-h-[120px]"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="property-type">Property Type</Label>
+                    <select
+                      id="property-type"
+                      className="mt-1 w-full border border-border rounded-md px-3 py-2 focus:border-primary focus:ring-primary bg-background"
+                    >
+                      <option>Select type</option>
+                      <option>Studio</option>
+                      <option>1 Bedroom</option>
+                      <option>2 Bedroom</option>
+                      <option>3+ Bedroom</option>
+                      <option>Shared Room</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label htmlFor="max-occupancy">Max Occupancy</Label>
+                    <select
+                      id="max-occupancy"
+                      className="mt-1 w-full border border-border rounded-md px-3 py-2 focus:border-primary focus:ring-primary bg-background"
+                    >
+                      <option>1 person</option>
+                      <option>2 people</option>
+                      <option>3 people</option>
+                      <option>4+ people</option>
+                    </select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Location */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <MapPin className="h-5 w-5 text-primary" />
+                  <span>Location</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="address">Full Address</Label>
+                  <Input
+                    id="address"
+                    placeholder="123 University Ave, College Town, ST 12345"
+                    className="mt-1"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="university">Nearest University</Label>
+                    <Input
+                      id="university"
+                      placeholder="e.g., State University"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="distance">Distance to Campus</Label>
+                    <Input
+                      id="distance"
+                      placeholder="e.g., 0.5 miles"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Pricing & Availability */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <DollarSign className="h-5 w-5 text-primary" />
+                  <span>Pricing & Availability</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="monthly-rent">Monthly Rent ($)</Label>
+                    <Input
+                      id="monthly-rent"
+                      type="number"
+                      placeholder="850"
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="security-deposit">
+                      Security Deposit ($)
+                    </Label>
+                    <Input
+                      id="security-deposit"
+                      type="number"
+                      placeholder="500"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="available-from">Available From</Label>
+                    <Input id="available-from" type="date" className="mt-1" />
+                  </div>
+                  <div>
+                    <Label htmlFor="available-until">Available Until</Label>
+                    <Input id="available-until" type="date" className="mt-1" />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="min-stay">Minimum Stay Duration</Label>
+                  <select
+                    id="min-stay"
+                    className="mt-1 w-full border border-border rounded-md px-3 py-2 focus:border-primary focus:ring-primary bg-background"
+                  >
+                    <option>1 week</option>
+                    <option>2 weeks</option>
+                    <option>1 month</option>
+                    <option>2 months</option>
+                    <option>3 months</option>
+                  </select>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Amenities */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle>Amenities</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-4">
+                  {amenities.map((amenity) => {
+                    const Icon = amenity.icon;
+                    const isSelected = selectedAmenities.includes(amenity.id);
+                    return (
+                      <button
+                        key={amenity.id}
+                        onClick={() => toggleAmenity(amenity.id)}
+                        className={`p-4 border-2 rounded-lg flex flex-col items-center space-y-2 transition-colors ${
+                          isSelected
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border hover:border-muted-foreground"
+                        }`}
+                      >
+                        <Icon className="h-6 w-6" />
+                        <span className="text-sm font-medium">
+                          {amenity.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Photos */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle>Photos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                  <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">
+                    Upload Photos
+                  </h3>
+                  <p className="text-muted-foreground mb-4">
+                    Add photos to showcase your property
+                  </p>
+                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                    Choose Files
+                  </Button>
+                </div>
+                {uploadedImages.length > 0 && (
+                  <div className="grid grid-cols-3 gap-4 mt-4">
+                    {uploadedImages.map((image, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={image || "/placeholder.svg"}
+                          alt={`Upload ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-lg"
+                        />
+                        <button className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1">
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Preview */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle>Preview</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="w-full h-32 bg-muted rounded-lg flex items-center justify-center">
+                    <span className="text-muted-foreground">Photo Preview</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">
+                      Property Title
+                    </h3>
+                    <p className="text-sm text-muted-foreground flex items-center mt-1">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      Location
+                    </p>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold text-primary">$0</span>
+                    <span className="text-sm text-muted-foreground">
+                      per month
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Tips */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle>Tips for Success</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-start space-x-2">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-sm text-muted-foreground">
+                    Add high-quality photos to attract more interest
+                  </p>
+                </div>
+                <div className="flex items-start space-x-2">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-sm text-muted-foreground">
+                    Write a detailed description highlighting unique features
+                  </p>
+                </div>
+                <div className="flex items-start space-x-2">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-sm text-muted-foreground">
+                    Set competitive pricing based on similar properties
+                  </p>
+                </div>
+                <div className="flex items-start space-x-2">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                  <p className="text-sm text-muted-foreground">
+                    Respond quickly to messages from interested students
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                Publish Listing
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full border-primary text-primary hover:bg-primary/10 bg-transparent"
+              >
+                Save as Draft
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
