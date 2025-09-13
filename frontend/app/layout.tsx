@@ -4,6 +4,7 @@ import { Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/sonner";
+import { FloatingChatbot } from "@/components/floating-chatbot";
 
 const instrumentSans = Instrument_Sans({ subsets: ["latin"] });
 
@@ -29,6 +30,7 @@ export default function RootLayout({
         >
           <SessionProvider>{children}</SessionProvider>
           <Toaster richColors position="top-center" />
+          <FloatingChatbot />
         </ThemeProvider>
       </body>
     </html>
