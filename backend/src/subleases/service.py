@@ -5,10 +5,13 @@ import uuid
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from src.subleases.models import SubLease, SubLeaseStatus
 from src.subleases.schemas import SubLeaseCreate, SubLeaseUpdate
+from src.properties.models import Property
+from src.propertyimages.models import PropertyImage
+from src.auth.models import User
 
 
 class SubLeaseService:
@@ -21,27 +24,33 @@ class SubLeaseService:
     
     def get_sublease_by_id(self, sublease_id: uuid.UUID) -> Optional[SubLease]:
         """
-        Get sublease by ID.
+        Get sublease by ID with property images and lessor details.
         
         Args:
             sublease_id: Sublease ID.
             
         Returns:
-            SubLease: Sublease object or None.
+            SubLease: Sublease object with property images and lessor details or None.
         """
-        return self.db.query(SubLease).filter(SubLease.sublease_id == sublease_id).first()
+        return self.db.query(SubLease).options(
+            joinedload(SubLease.property).joinedload(Property.images),
+            joinedload(SubLease.lessor)
+        ).filter(SubLease.sublease_id == sublease_id).first()
     
     def get_subleases_by_lessor(self, lessor_id: uuid.UUID) -> List[SubLease]:
         """
-        Get subleases by lessor ID.
+        Get subleases by lessor ID with property images and lessor details.
         
         Args:
             lessor_id: Lessor user ID.
             
         Returns:
-            List[SubLease]: List of sublease objects.
+            List[SubLease]: List of sublease objects with property images and lessor details.
         """
-        return self.db.query(SubLease).filter(SubLease.lessor_id == lessor_id).all()
+        return self.db.query(SubLease).options(
+            joinedload(SubLease.property).joinedload(Property.images),
+            joinedload(SubLease.lessor)
+        ).filter(SubLease.lessor_id == lessor_id).all()
     
     def get_subleases_by_property(self, property_id: uuid.UUID) -> List[SubLease]:
         """
@@ -57,7 +66,7 @@ class SubLeaseService:
     
     def get_all_subleases(self, skip: int = 0, limit: int = 100, status: Optional[SubLeaseStatus] = None) -> List[SubLease]:
         """
-        Get all subleases with pagination and optional status filter.
+        Get all subleases with pagination, optional status filter, property images, and lessor details.
         
         Args:
             skip: Number of records to skip.
@@ -65,9 +74,12 @@ class SubLeaseService:
             status: Optional status filter.
             
         Returns:
-            List[SubLease]: List of sublease objects.
+            List[SubLease]: List of sublease objects with property images and lessor details.
         """
-        query = self.db.query(SubLease)
+        query = self.db.query(SubLease).options(
+            joinedload(SubLease.property).joinedload(Property.images),
+            joinedload(SubLease.lessor)
+        )
         
         if status:
             query = query.filter(SubLease.status == status.value)

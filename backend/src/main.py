@@ -7,11 +7,15 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+import socketio
 
 from src.auth import router as auth_router
 from src.properties import router as properties_router
 from src.subleases import router as subleases_router
 from src.userratings import router as userratings_router
+from src.messages import router as messages_router
+from src.messages.websocket import chat_manager
 from src.config import settings
 from src.database import create_db_and_tables
 
@@ -21,6 +25,7 @@ from src.properties.models import Property  # noqa: F401
 from src.propertyimages.models import PropertyImage  # noqa: F401
 from src.subleases.models import SubLease  # noqa: F401
 from src.userratings.models import UserRating  # noqa: F401
+from src.messages.models import Message, Conversation, MessageRead  # noqa: F401
 
 
 @asynccontextmanager
@@ -46,9 +51,20 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Create Socket.IO ASGI app
+sio_app = socketio.ASGIApp(chat_manager.sio, app)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for development
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Configure larger request body limits for file uploads
 # These settings help handle multiple file uploads better
-import uvicorn.config
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
@@ -75,6 +91,7 @@ app.include_router(auth_router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(properties_router, prefix="/api/v1/properties", tags=["Properties"])
 app.include_router(subleases_router, prefix="/api/v1/subleases", tags=["Subleases"])
 app.include_router(userratings_router, prefix="/api/v1/userratings", tags=["User Ratings"])
+# app.include_router(messages_router, prefix="/api/v1/messages", tags=["Messages"])
 
 
 @app.get("/")
@@ -123,4 +140,4 @@ def api_info():
     }
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000,reload=True)
+    uvicorn.run("src.main:sio_app", host="0.0.0.0", port=8000, reload=True)

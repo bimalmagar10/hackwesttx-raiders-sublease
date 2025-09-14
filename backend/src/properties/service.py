@@ -176,17 +176,19 @@ class PropertiesService:
         """
         return self.db.query(Property).filter(Property.property_id == property_id).first()
     
-    def get_properties_by_owner(self, owner_id: uuid.UUID) -> List[Property]:
+    def get_properties_by_owner(self, owner_id: uuid.UUID, skip: int = 0, limit: int = 100) -> List[Property]:
         """
-        Get properties by owner ID.
+        Get properties by owner ID with pagination.
         
         Args:
             owner_id: Owner user ID.
+            skip: Number of records to skip.
+            limit: Maximum number of records to return.
             
         Returns:
             List[Property]: List of property objects.
         """
-        return self.db.query(Property).filter(Property.owner_id == owner_id).all()
+        return self.db.query(Property).filter(Property.owner_id == owner_id).offset(skip).limit(limit).all()
     
     def get_all_properties(self, skip: int = 0, limit: int = 100) -> List[Property]:
         """

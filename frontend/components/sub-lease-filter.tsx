@@ -2,12 +2,37 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { MapPin, List, Grid } from "lucide-react";
-import { SocialPost } from "@/components/social-post";
-import { socialPosts } from "@/lib/constants";
-import { useState } from "react";
+import { MapPin, List, Grid, Loader2 } from "lucide-react";
+import { SubleaseCard } from "@/components/sublease-card";
+import { useState, useEffect } from "react";
+import { getSubleases, SubleaseResponse } from "@/lib/api";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 const SubLeaseFilter = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
+  const [subleases, setSubleases] = useState<SubleaseResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    const fetchSubleases = async () => {
+      try {
+        setLoading(true);
+        const data = await getSubleases();
+        setSubleases(data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching subleases:", err);
+        setError("Failed to load subleases");
+        toast.error("Failed to load subleases");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSubleases();
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -134,7 +159,11 @@ const SubLeaseFilter = () => {
               <h2 className="text-2xl font-bold text-foreground">
                 Available Sub-leases
               </h2>
-              <p className="text-muted-foreground mt-1">127 properties found</p>
+              <p className="text-muted-foreground mt-1">
+                {loading
+                  ? "Loading..."
+                  : `${subleases.length} properties found`}
+              </p>
             </div>
             <div className="flex items-center space-x-4">
               <select className="border border-border rounded-md px-3 py-2 text-sm focus:border-primary focus:ring-primary bg-background">
@@ -172,29 +201,46 @@ const SubLeaseFilter = () => {
             </div>
           </div>
 
-          {/* Social Feed */}
+          {/* Sublease Feed */}
           <div className="space-y-6">
-            {socialPosts.map((post, index) => (
-              <div
-                key={post.id}
-                className={`animate-in slide-in-from-bottom-4 duration-500 delay-${
-                  index * 100
-                }`}
-              >
-                <SocialPost post={post} />
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <span className="ml-2 text-muted-foreground">
+                  Loading subleases...
+                </span>
               </div>
-            ))}
-          </div>
-
-          {/* Load More */}
-          <div className="text-center mt-8 animate-in slide-in-from-bottom-4 duration-500 delay-400">
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-primary text-primary hover:bg-primary/10 bg-transparent"
-            >
-              Load More Properties
-            </Button>
+            ) : error ? (
+              <div className="text-center py-12">
+                <p className="text-red-500 mb-4">{error}</p>
+                <Button
+                  variant="outline"
+                  onClick={() => window.location.reload()}
+                >
+                  Retry
+                </Button>
+              </div>
+            ) : subleases.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">
+                  No subleases available at the moment.
+                </p>
+              </div>
+            ) : (
+              subleases.map((sublease, index) => (
+                <div
+                  key={sublease.sublease_id}
+                  className={`animate-in slide-in-from-bottom-4 duration-500 delay-${
+                    index * 100
+                  }`}
+                >
+                  <SubleaseCard
+                    sublease={sublease}
+                    currentUserId={session?.user?.id}
+                  />
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

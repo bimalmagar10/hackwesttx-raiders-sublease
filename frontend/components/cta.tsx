@@ -24,15 +24,6 @@ const CTA = () => {
                 Sign Up Free
               </Button>
             </Link>
-            <Link href="/dashboard">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary px-8 py-4 text-lg bg-transparent"
-              >
-                Browse Properties
-              </Button>
-            </Link>
           </div>
         </div>
       </div>

@@ -33,7 +33,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const data = await fetchAPI<{
             status: string;
             data?: { access_token: string };
-          }>("/auth/login", {
+          }>("/api/v1/auth/login", {
             method: "POST",
             body: JSON.stringify({
               email: credentials.email,
@@ -45,7 +45,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             const userData = await fetchAPI<{
               user_id: string;
               email: string;
-            }>("/auth/me", {
+            }>("/api/v1/auth/me", {
               headers: {
                 Authorization: `Bearer ${data.data.access_token}`,
               },

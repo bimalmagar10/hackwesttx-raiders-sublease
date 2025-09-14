@@ -15,6 +15,7 @@ import src.properties.models
 import src.subleases.models
 import src.userratings.models
 import src.propertyimages.models
+import src.messages.models
 
 config = context.config
 

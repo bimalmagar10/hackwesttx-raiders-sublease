@@ -32,19 +32,20 @@ def get_properties(
     db: Session = Depends(get_db)
 ) -> List[PropertyRead]:
     """
-    Get all properties with pagination.
+    Get current user's properties with pagination.
     
     Args:
         skip: Number of records to skip.
         limit: Maximum number of records to return.
+        current_user: Current authenticated user.
         db: Database session.
         
     Returns:
-        List[PropertyRead]: List of properties.
+        List[PropertyRead]: List of current user's properties.
     """
-    logger.info(f"Getting all properties - skip: {skip}, limit: {limit}")
+    logger.info(f"Getting properties for user: {current_user.user_id} - skip: {skip}, limit: {limit}")
     properties_service = PropertiesService(db)
-    properties = properties_service.get_all_properties(skip=skip, limit=limit)
+    properties = properties_service.get_properties_by_owner(current_user.user_id, skip=skip, limit=limit)
     
     property_list = [properties_service.convert_property_to_read(prop) for prop in properties]
     logger.debug(f"Retrieved {len(property_list)} properties")

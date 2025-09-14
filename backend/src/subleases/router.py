@@ -13,13 +13,60 @@ from src.database import get_db
 from src.subleases.dependencies import get_sublease_by_id, get_user_sublease
 from src.subleases.models import SubLease, SubLeaseStatus
 from src.subleases.schemas import (
-    SubLeaseCreate, SubLeaseRead, SubLeaseUpdate, SubLeaseDetail, SubLeaseMyRead
+    SubLeaseCreate, SubLeaseRead, SubLeaseUpdate, SubLeaseDetail, SubLeaseMyRead,
+    PropertyImageRead, LessorRead
 )
 from src.subleases.service import SubLeaseService
 from src.utils.responses import success_response
 
 
 router = APIRouter()
+
+
+def _convert_sublease_to_read(sublease: SubLease) -> SubLeaseRead:
+    """Convert SubLease model to SubLeaseRead schema with property images and lessor details."""
+    sublease_dict = {
+        "sublease_id": sublease.sublease_id,
+        "property_id": sublease.property_id,
+        "lessor_id": sublease.lessor_id,
+        "title": sublease.title,
+        "description": sublease.description,
+        "rate": sublease.rate,
+        "minimum_stay_days": sublease.minimum_stay_days,
+        "maximum_stay_days": sublease.maximum_stay_days,
+        "available_from": sublease.available_from,
+        "available_until": sublease.available_until,
+        "status": sublease.status,
+        "created_at": sublease.created_at,
+        "property_images": [
+            PropertyImageRead.model_validate(image) 
+            for image in (sublease.property.images if sublease.property else [])
+        ],
+        "lessor": LessorRead.model_validate(sublease.lessor) if sublease.lessor else None
+    }
+    return SubLeaseRead.model_validate(sublease_dict)
+
+
+def _convert_sublease_to_my_read(sublease: SubLease) -> SubLeaseMyRead:
+    """Convert SubLease model to SubLeaseMyRead schema with property images."""
+    sublease_dict = {
+        "sublease_id": sublease.sublease_id,
+        "property_id": sublease.property_id,
+        "title": sublease.title,
+        "description": sublease.description,
+        "rate": sublease.rate,
+        "minimum_stay_days": sublease.minimum_stay_days,
+        "maximum_stay_days": sublease.maximum_stay_days,
+        "available_from": sublease.available_from,
+        "available_until": sublease.available_until,
+        "status": sublease.status,
+        "created_at": sublease.created_at,
+        "property_images": [
+            PropertyImageRead.model_validate(image) 
+            for image in (sublease.property.images if sublease.property else [])
+        ]
+    }
+    return SubLeaseMyRead.model_validate(sublease_dict)
 
 
 @router.get("/", response_model=List[SubLeaseRead])
@@ -44,7 +91,7 @@ def get_subleases(
     """
     sublease_service = SubLeaseService(db)
     subleases = sublease_service.get_all_subleases(skip=skip, limit=limit, status=status)
-    return [SubLeaseRead.model_validate(sublease) for sublease in subleases]
+    return [_convert_sublease_to_read(sublease) for sublease in subleases]
 
 
 @router.get("/me", response_model=List[SubLeaseMyRead])
@@ -64,7 +111,7 @@ def get_my_subleases(
     """
     sublease_service = SubLeaseService(db)
     subleases = sublease_service.get_subleases_by_lessor(current_user.user_id)
-    return [SubLeaseMyRead.model_validate(sublease) for sublease in subleases]
+    return [_convert_sublease_to_my_read(sublease) for sublease in subleases]
 
 
 @router.get("/{sublease_id}", response_model=SubLeaseRead)
@@ -81,7 +128,7 @@ def get_sublease(
     Returns:
         SubLeaseRead: Sublease data.
     """
-    return SubLeaseRead.model_validate(sublease_obj)
+    return _convert_sublease_to_read(sublease_obj)
 
 
 @router.post("/", response_model=Any)
@@ -104,7 +151,9 @@ def create_sublease(
     sublease_service = SubLeaseService(db)
     sublease = sublease_service.create_sublease(sublease_data, current_user.user_id)
     
-    sublease_response = SubLeaseRead.model_validate(sublease)
+    # Refresh the sublease to get the lessor details
+    created_sublease = sublease_service.get_sublease_by_id(sublease.sublease_id)
+    sublease_response = _convert_sublease_to_read(created_sublease)
     
     return success_response(
         data=sublease_response,
@@ -131,7 +180,9 @@ def update_sublease(
     sublease_service = SubLeaseService(db)
     updated_sublease = sublease_service.update_sublease(sublease_obj, sublease_data)
     
-    return SubLeaseRead.model_validate(updated_sublease)
+    # Refresh the sublease to get the lessor details
+    refreshed_sublease = sublease_service.get_sublease_by_id(updated_sublease.sublease_id)
+    return _convert_sublease_to_read(refreshed_sublease)
 
 
 @router.delete("/{sublease_id}", response_model=Any)

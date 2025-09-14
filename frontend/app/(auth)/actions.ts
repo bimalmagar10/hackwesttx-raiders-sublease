@@ -93,7 +93,7 @@ export async function register(
 
   try {
     // Call your backend API to register the user
-    await fetchAPI<{ message: string }>("/auth/register", {
+    await fetchAPI<{ message: string }>("/api/v1/auth/register", {
       method: "POST",
       body: JSON.stringify({
         first_name,

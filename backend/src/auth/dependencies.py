@@ -77,3 +77,32 @@ async def get_current_active_user(
             detail="Inactive user"
         )
     return current_user
+
+
+async def get_current_user_from_token(token: str, db: Session) -> User | None:
+    """
+    Get current user from raw token string (for WebSocket authentication).
+    
+    Args:
+        token: JWT token string.
+        db: Database session.
+        
+    Returns:
+        User: Authenticated user or None if invalid.
+    """
+    try:
+        auth_service = AuthService(db)
+        user_id = auth_service.verify_token(token)
+        
+        if user_id is None:
+            return None
+        
+        user = auth_service.get_user_by_id(user_id)
+        
+        if user is None or not user.is_active:
+            return None
+        
+        return user
+    
+    except Exception:
+        return None

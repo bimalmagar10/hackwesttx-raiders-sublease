@@ -5,13 +5,37 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Header } from "@/components/header";
 import { PropertyCard } from "@/components/property-card";
-import { Grid, List, Filter, MapPin } from "lucide-react";
-import { useState } from "react";
-import { properties } from "@/lib/constants";
+import { Grid, List, Filter, MapPin, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { getProperties, PropertyResponse } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function Browse() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
+  const [properties, setProperties] = useState<PropertyResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        setLoading(true);
+        const fetchedProperties = await getProperties();
+        console.log(fetchedProperties);
+        setProperties(fetchedProperties);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to fetch properties:", err);
+        setError("Failed to load properties. Please try again.");
+        toast.error("Failed to load properties");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -93,22 +117,20 @@ export default function Browse() {
                       Property Type
                     </h4>
                     <div className="space-y-2">
-                      {["Studio", "1 Bedroom", "2 Bedroom", "Shared Room"].map(
-                        (type) => (
-                          <label
-                            key={type}
-                            className="flex items-center space-x-2"
-                          >
-                            <input
-                              type="checkbox"
-                              className="rounded border-border text-primary focus:ring-primary"
-                            />
-                            <span className="text-sm text-muted-foreground">
-                              {type}
-                            </span>
-                          </label>
-                        )
-                      )}
+                      {["1BHK", "2BHK", "3BHK"].map((type) => (
+                        <label
+                          key={type}
+                          className="flex items-center space-x-2"
+                        >
+                          <input
+                            type="checkbox"
+                            className="rounded border-border text-primary focus:ring-primary"
+                          />
+                          <span className="text-sm text-muted-foreground">
+                            {type}
+                          </span>
+                        </label>
+                      ))}
                     </div>
                   </div>
 
@@ -156,10 +178,12 @@ export default function Browse() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
               <div>
                 <h2 className="text-2xl font-bold text-foreground">
-                  Browse Properties
+                  Browse My Properties
                 </h2>
                 <p className="text-muted-foreground mt-1">
-                  {properties.length} properties found
+                  {loading
+                    ? "Loading..."
+                    : `${properties.length} properties found`}
                 </p>
               </div>
               <div className="flex items-center space-x-4">
@@ -209,24 +233,50 @@ export default function Browse() {
             </div>
 
             {/* Properties Grid/List */}
-            <div
-              className={
-                viewMode === "grid"
-                  ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-                  : "space-y-6"
-              }
-            >
-              {properties.map((property) => (
-                <PropertyCard
-                  key={property.id}
-                  property={property}
-                  variant={viewMode}
-                />
-              ))}
-            </div>
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <span className="ml-2 text-muted-foreground">
+                  Loading properties...
+                </span>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <p className="text-red-500 mb-4">{error}</p>
+                <Button
+                  onClick={() => window.location.reload()}
+                  variant="outline"
+                >
+                  Try Again
+                </Button>
+              </div>
+            ) : properties.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground mb-4">
+                  No properties found
+                </p>
+                <Button variant="outline">Clear Filters</Button>
+              </div>
+            ) : (
+              <div
+                className={
+                  viewMode === "grid"
+                    ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                    : "space-y-6"
+                }
+              >
+                {properties.map((property) => (
+                  <PropertyCard
+                    key={property.property_id}
+                    property={property}
+                    variant={viewMode}
+                  />
+                ))}
+              </div>
+            )}
 
             {/* Load More */}
-            <div className="text-center mt-8">
+            {/* <div className="text-center mt-8">
               <Button
                 variant="outline"
                 size="lg"
@@ -234,7 +284,7 @@ export default function Browse() {
               >
                 Load More Properties
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
